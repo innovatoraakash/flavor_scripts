@@ -2,10 +2,14 @@
 
 # Define paths
 GRADLE_FILE_PATH="./android/config/product_flavors.gradle"
-DART_FILE_PATH="./lib/config/flavor/flavor_config_data.dart"
+dart_file=$(find . -name "flavor_config.dart")
 BUILD_TYPES_FILE_PATH="./android/config/build_types.gradle"
 
-
+if [ -z "$dart_file" ]; then
+    # File not found
+    echo -e "${RED}flavor_config.dart not found.\nPlease rename your file containing EnvironmentType to flavor_config.dart, or run flavor setup.${NC}"
+    exit
+fi
 # Define backup paths
 DART_FILE_BACKUP_PATH="${DART_FILE_PATH}.bak"
 GRADLE_FILE_BACKUP_PATH="${GRADLE_FILE_PATH}.bak"

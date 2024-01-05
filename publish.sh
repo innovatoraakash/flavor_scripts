@@ -1,11 +1,19 @@
 #!/bin/bash
+# Get the full path of the current script
+SCRIPT_PATH=$(realpath "$0")
 
+# Extract the directory from the full path
+BASE_DIR=$(dirname "$SCRIPT_PATH")
 # Define file paths
 
-dart_file="./lib/config/flavor/flavor_config_data.dart"
+dart_file=$(find . -name "flavor_config.dart")
 key_credentials_json="android/config/automate/pc-api-4985841030109568680-940-fb3d7f4ebd8d.json"
 key_credentials_json1="android/config/automate/api-6145234015965894785-501180-b8d9d6d4d6b0.json"
-
+if [ -z "$dart_file" ]; then
+    # File not found
+    echo -e "${RED}flavor_config.dart not found.\nPlease rename your file containing EnvironmentType to flavor_config.dart, or run flavor setup.${NC}"
+    exit
+fi
 # Define color codes
 YELLOW='\033[1;33m' # Yellow color
 RED='\033[0;31m'    # Red color
@@ -13,12 +21,12 @@ GREEN='\033[0;32m'  # Green color
 NC='\033[0m'        # No color
 
 checkFlavorListEmpty() {
-    source ./flavor_list.sh
+    source "${BASE_DIR}/flavor_list.sh"
 
     if [ ${#flavorList[@]} -eq 0 ]; then
         read -p "$The flavor list is empty. Do you want to create a new flavor? (y/N): " response
         if [[ $response =~ ^[Yy]$ ]]; then
-            ./scripts/add_flavor.sh
+            "${BASE_DIR}/scripts/add_flavor.sh"
             if [ $? -eq 0 ]; then
                 read -p "$New flavor added. Press any key to continue or 'N' to abort: " continue_choice
                 if [[ $continue_choice =~ ^[Nn]$ ]]; then
@@ -34,20 +42,20 @@ checkFlavorListEmpty() {
             exit 0
         fi
     else
-        ./scripts/check_duplicate_flavor.sh
+        "${BASE_DIR}/scripts/check_duplicate_flavor.sh"
     fi
 }
 
 getAllflavor() {
     checkFlavorListEmpty
-    source ./flavor_list.sh
+    source "${BASE_DIR}/flavor_list.sh"
 
     if [ ${#flavorList[@]} -eq 0 ]; then
         echo -e "$The flavor list is empty. Do you want to add a flavor? (Y/N)"
         read userResponse
 
         if [[ "$userResponse" == "Y" || "$userResponse" == "y" ]]; then
-            ./scripts/add_flavor.sh
+            "${BASE_DIR}/scripts/add_flavor.sh"
             if [ $? -eq 0 ]; then
                 echo -e "$Add flavor successful. Do you want to continue the script? (Y/N)"
                 read continueResponse
@@ -82,7 +90,7 @@ case $choice in
     ;;
   2)
       checkFlavorListEmpty
-  source ./flavor_list.sh
+  source "${BASE_DIR}/flavor_list.sh"
   echo "Available flavors:"
   for i in "${!flavorList[@]}"; do
     echo "$i. ${flavorList[$i]}"
@@ -112,7 +120,7 @@ case $choice in
   ;;
   3)
     checkFlavorListEmpty
-    source ./flavor_list.sh
+    source "${BASE_DIR}/flavor_list.sh"
     echo "Available flavors:"
     for flavor in "${flavorList[@]}"; do
         echo "$flavor"
@@ -238,7 +246,7 @@ fi
 for flavor in "${flavors[@]}"
 do  
 # Build the Android App Bundle for the flavor
- flutter build appbundle --flavor=$flavor --release
+ flutter build appbundle --flavor $flavor --release
 
   done
 # done

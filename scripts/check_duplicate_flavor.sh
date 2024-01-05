@@ -1,6 +1,7 @@
 #!/bin/bash
 #lib\config\flavor\flavor_config_data.dart
-dart_file="./lib/config/flavor/flavor_config_data.dart"
+dart_file=$(find . -name "flavor_config.dart")
+
 
 # Check if the file exists
 if [ ! -f "$dart_file" ]; then
