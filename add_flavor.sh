@@ -3,14 +3,14 @@ export LC_ALL=C.UTF-8
 
 # Define paths
 GRADLE_FILE_PATH="./android/config/product_flavors.gradle"
-DART_FILE_PATH=$(find . -name "flavor_config.dart")
+FLAVOR_CONFIG_FILE=$(find . -name "flavor_config.dart")
 BUILD_TYPES_FILE_PATH="./android/config/build_types.gradle"
 SignInConfig_file_Path="./android/config/signing_config.gradle"
-if [ -z "$DART_FILE_PATH" ]; then
+if [ -z "$FLAVOR_CONFIG_FILE" ]; then
     # File not found
     echo -e "${RED}flavor_config.dart not found.\nPlease rename your file containing EnvironmentType to flavor_config.dart, or run flavor setup.${NC}"
 fi
-DART_FILE_BACKUP_PATH="${DART_FILE_PATH}.bak"
+DART_FILE_BACKUP_PATH="${FLAVOR_CONFIG_FILE}.bak"
 GRADLE_FILE_BACKUP_PATH="${GRADLE_FILE_PATH}.bak"
 BUILD_TYPES_FILE_BACKUP_PATH="${BUILD_TYPES_FILE_PATH}.bak"
 SignInConfig_file_BACKUP_Path="${SignInConfig_file_Path}.bak"
@@ -18,7 +18,7 @@ ANDROID_ICON_PATH="./android/app/src/$flavorName"
 IOS_ICON_PATH="./ios/Runner/Assets.xcassets/AppIcon-$flavorName.appiconset"
 
 # Define backup paths
-DART_FILE_BACKUP_PATH="${DART_FILE_PATH}.bak"
+DART_FILE_BACKUP_PATH="${FLAVOR_CONFIG_FILE}.bak"
 GRADLE_FILE_BACKUP_PATH="${GRADLE_FILE_PPES_FILE_PATH}.bak"
 
 assetPath="./flavor_icon/"
@@ -169,7 +169,7 @@ read_user_inputs() {
         fi
 
         # Check if flavor name already exists in the Dart file
-       if grep -q "$flavorName(" "$DART_FILE_PATH"; then
+       if grep -q "$flavorName(" "$FLAVOR_CONFIG_FILE"; then
     echo "Flavor '$flavorName' already exists. Choose an action:"
     select opt in "Create New Flavor" "Abort"; do
         case $opt in
@@ -219,7 +219,7 @@ fi
         fi
 
         # Check if the code exists in the Dart file
-        if grep -q "companyCode: $companyCode" "$DART_FILE_PATH"; then
+        if grep -q "companyCode: $companyCode" "$FLAVOR_CONFIG_FILE"; then
             echo "Code '$companyCode' already exists for flavor '$flavorName'. Choose an action:"
             select opt in "Enter a New Code" "Exit Script" "Show Match"; do
                 case $opt in
@@ -227,7 +227,7 @@ fi
                     "Exit Script") echo "Operation aborted by user."; exit ;;  # Exit script
                     "Show Match")
                         echo "Matching enum details:"
-                        awk -v code="$companyCode" -v RS= -v FS="\n" '/EnvironmentType/ && /companyCode: '"$companyCode"'/ {print $0}' "$DART_FILE_PATH"
+                        awk -v code="$companyCode" -v RS= -v FS="\n" '/EnvironmentType/ && /companyCode: '"$companyCode"'/ {print $0}' "$FLAVOR_CONFIG_FILE"
                         continue 2  # Continue at the beginning of the outer loop
                         ;;
                     *) echo "Invalid option. Please select a valid action." ;;
@@ -300,24 +300,24 @@ add_env_type_in_dart() {
     ),"
 
     # Backup the original Dart file
-    cp "$DART_FILE_PATH" "${DART_FILE_PATH}.bak"
+    cp "$FLAVOR_CONFIG_FILE" "${FLAVOR_CONFIG_FILE}.bak"
 
     # Check if the enum value already exists
-    if grep -q "$flavorName(" "$DART_FILE_PATH"; then
+    if grep -q "$flavorName(" "$FLAVOR_CONFIG_FILE"; then
         echo "Enum value '$flavorName' already exists. Choose an option:"
         select opt in "Override" "Abort"; do
             case $opt in
                 "Override")
                     # Override the existing enum value
-                    sed -i "/$flavorName(/c\\$newEnumValue" "$DART_FILE_PATH"
+                    sed -i "/$flavorName(/c\\$newEnumValue" "$FLAVOR_CONFIG_FILE"
                     echo "Enum value '$flavorName' overridden successfully."
                     break
                     ;;
                 "Abort")
                     # User chooses to abort: Delete backup and exit
                     echo "Operation aborted by user."
-                    rm -f "${DART_FILE_PATH}.bak"
-                    echo "Deleted backup file ${DART_FILE_PATH}.bak."
+                    rm -f "${FLAVOR_CONFIG_FILE}.bak"
+                    echo "Deleted backup file ${FLAVOR_CONFIG_FILE}.bak."
                     return 0
                     ;;
                 *)
@@ -330,25 +330,25 @@ add_env_type_in_dart() {
         echo "$newEnumValue" > temp_enum_value.txt
 
         # Find the insertion point for the new enum value
-        insertLine=$(grep -n 'enum EnvironmentType {' "$DART_FILE_PATH" | cut -d: -f1)
+        insertLine=$(grep -n 'enum EnvironmentType {' "$FLAVOR_CONFIG_FILE" | cut -d: -f1)
         if [ -z "$insertLine" ]; then
-            echo "ERROR: Enum 'EnvironmentType' not found in $DART_FILE_PATH."
-            mv "${DART_FILE_PATH}.bak" "$DART_FILE_PATH"
+            echo "ERROR: Enum 'EnvironmentType' not found in $FLAVOR_CONFIG_FILE."
+            mv "${FLAVOR_CONFIG_FILE}.bak" "$FLAVOR_CONFIG_FILE"
             rm temp_enum_value.txt
             return 1
         fi
 
         # Insert the new enum value and clean up
-        sed -i "${insertLine}r temp_enum_value.txt" "$DART_FILE_PATH"
+        sed -i "${insertLine}r temp_enum_value.txt" "$FLAVOR_CONFIG_FILE"
         rm temp_enum_value.txt
 
         # Verify if the new enum value was added successfully
-        if grep -q "$flavorName(" "$DART_FILE_PATH"; then
-            echo "New enum value '$flavorName' added successfully to $DART_FILE_PATH"
+        if grep -q "$flavorName(" "$FLAVOR_CONFIG_FILE"; then
+            echo "New enum value '$flavorName' added successfully to $FLAVOR_CONFIG_FILE"
              
         else
             echo "ERROR: Failed to add the new enum value '$flavorName'. Restoring from backup."
-            mv "${DART_FILE_PATH}.bak" "$DART_FILE_PATH"
+            mv "${FLAVOR_CONFIG_FILE}.bak" "$FLAVOR_CONFIG_FILE"
             return 1
         fi
     fi

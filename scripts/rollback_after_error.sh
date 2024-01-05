@@ -11,7 +11,7 @@ if [ -z "$dart_file" ]; then
     exit
 fi
 # Define backup paths
-DART_FILE_BACKUP_PATH="${DART_FILE_PATH}.bak"
+DART_FILE_BACKUP_PATH="${FLAVOR_CONFIG_FILE}.bak"
 GRADLE_FILE_BACKUP_PATH="${GRADLE_FILE_PATH}.bak"
 BUILD_TYPES_FILE_BACKUP_PATH="${BUILD_TYPES_FILE_PATH}.bak"
 
@@ -123,7 +123,7 @@ delete_backup_files() {
 # delete_backup_files
 
 # Example usage (replace with your actual functional code)
-# cp "$DART_FILE_PATH" "$DART_FILE_BACKUP_PATH"
+# cp "$FLAVOR_CONFIG_FILE" "$DART_FILE_BACKUP_PATH"
 # check_error_and_rollback
 # [perform other operations here]
 # check_error_and_rollback

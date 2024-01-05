@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the path to the Dart file
-DART_FILE_PATH="./lib/config/flavor/flavor_config_data.dart"
+FLAVOR_CONFIG_FILE="./lib/config/flavor/flavor_config.dart"
 
 # Define the code to be written to the Dart file
 INPUT_CODE="enum EnvironmentType {
@@ -27,20 +27,20 @@ INPUT_CODE="enum EnvironmentType {
 # Function to create or update the Dart file
 checkDartFlavorConfigFile() {
     # Create the directory if it doesn't exist
-    mkdir -p "$(dirname "$DART_FILE_PATH")"
+    mkdir -p "$(dirname "$FLAVOR_CONFIG_FILE")"
 
     # Check if the Dart file exists
-    if [ ! -f "$DART_FILE_PATH" ]; then
+    if [ ! -f "$FLAVOR_CONFIG_FILE" ]; then
         # Create the file and write the code if it doesn't exist
-        echo "$INPUT_CODE" > "$DART_FILE_PATH"
-        echo "Dart file created at '$DART_FILE_PATH'."
+        echo "$INPUT_CODE" > "$FLAVOR_CONFIG_FILE"
+        echo "Dart file created at '$FLAVOR_CONFIG_FILE'."
 
         # Set appropriate permissions for the Dart file
-        chmod 644 "$DART_FILE_PATH"
-        echo "Permissions set for '$DART_FILE_PATH'."
+        chmod 644 "$FLAVOR_CONFIG_FILE"
+        echo "Permissions set for '$FLAVOR_CONFIG_FILE'."
     else
         # File already exists
-        echo "Dart file '$DART_FILE_PATH' already exists. No changes were made."
+        echo "Dart file '$FLAVOR_CONFIG_FILE' already exists. No changes were made."
     fi
 }
 

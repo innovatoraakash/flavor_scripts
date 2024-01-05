@@ -1,5 +1,5 @@
 #!/bin/bash
-#lib\config\flavor\flavor_config_data.dart
+#lib\config\flavor\flavor_config.dart
 dart_file=$(find . -name "flavor_config.dart")
 
 
