@@ -2,7 +2,7 @@
 export LC_ALL=C.UTF-8
 
 # Define paths
-GRADLE_FILE_PATH="./android/config/product_flavors.gradle"
+PRODUCT_FLAVOR_GRADLE_PATH="./android/config/product_flavors.gradle"
 FLAVOR_CONFIG_FILE=$(find . -name "flavor_config.dart")
 BUILD_TYPES_FILE_PATH="./android/config/build_types.gradle"
 SignInConfig_file_Path="./android/config/signing_config.gradle"
@@ -11,7 +11,7 @@ if [ -z "$FLAVOR_CONFIG_FILE" ]; then
     echo -e "${RED}flavor_config.dart not found.\nPlease rename your file containing EnvironmentType to flavor_config.dart, or run flavor setup.${NC}"
 fi
 DART_FILE_BACKUP_PATH="${FLAVOR_CONFIG_FILE}.bak"
-GRADLE_FILE_BACKUP_PATH="${GRADLE_FILE_PATH}.bak"
+GRADLE_FILE_BACKUP_PATH="${PRODUCT_FLAVOR_GRADLE_PATH}.bak"
 BUILD_TYPES_FILE_BACKUP_PATH="${BUILD_TYPES_FILE_PATH}.bak"
 SignInConfig_file_BACKUP_Path="${SignInConfig_file_Path}.bak"
 ANDROID_ICON_PATH="./android/app/src/$flavorName"
@@ -371,7 +371,7 @@ add_flavor_detail_in_gradle() {
     "
 
     # Check if the flavor already exists in the Gradle file
-    if grep -q "$flavorName {" "$GRADLE_FILE_PATH"; then
+    if grep -q "$flavorName {" "$PRODUCT_FLAVOR_GRADLE_PATH"; then
         echo "Flavor '$flavorName' already exists in the Gradle file. Please choose an action:"
         select opt in "Create New Flavor" "Abort Operation"; do
             case $opt in
@@ -394,20 +394,20 @@ add_flavor_detail_in_gradle() {
         done
     else
         # Backup the original Gradle file before making changes
-        cp "$GRADLE_FILE_PATH" "${GRADLE_FILE_PATH}.bak"
+        cp "$PRODUCT_FLAVOR_GRADLE_PATH" "${PRODUCT_FLAVOR_GRADLE_PATH}.bak"
 
         # Insert the new flavor block into the Gradle file
-        echo "$newFlavorBlock" | awk -v flavorBlock="$newFlavorBlock" '/productFlavors {/ {print; print flavorBlock; next}1' "$GRADLE_FILE_PATH" > temp.gradle
-        mv temp.gradle "$GRADLE_FILE_PATH"
+        echo "$newFlavorBlock" | awk -v flavorBlock="$newFlavorBlock" '/productFlavors {/ {print; print flavorBlock; next}1' "$PRODUCT_FLAVOR_GRADLE_PATH" > temp.gradle
+        mv temp.gradle "$PRODUCT_FLAVOR_GRADLE_PATH"
 
         # Check if the new flavor was added successfully
-        if grep -q "$flavorName" "$GRADLE_FILE_PATH"; then
+        if grep -q "$flavorName" "$PRODUCT_FLAVOR_GRADLE_PATH"; then
             echo "New flavor '$flavorName' successfully added to the Gradle file."
             # Backup file is retained for safety
         else
             # Handle failure to add the new flavor
             echo "Failed to add new flavor '$flavorName'. Restoring original Gradle file."
-           # mv "${GRADLE_FILE_PATH}.bak" "$GRADLE_FILE_PATH"
+           # mv "${PRODUCT_FLAVOR_GRADLE_PATH}.bak" "$PRODUCT_FLAVOR_GRADLE_PATH"
             terminate_script_and_rollback
         fi
     fi

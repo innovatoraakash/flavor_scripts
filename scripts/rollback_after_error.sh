@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define paths
-GRADLE_FILE_PATH="./android/config/product_flavors.gradle"
+PRODUCT_FLAVOR_GRADLE_PATH="./android/config/product_flavors.gradle"
 dart_file=$(find . -name "flavor_config.dart")
 BUILD_TYPES_FILE_PATH="./android/config/build_types.gradle"
 
@@ -12,7 +12,7 @@ if [ -z "$dart_file" ]; then
 fi
 # Define backup paths
 DART_FILE_BACKUP_PATH="${FLAVOR_CONFIG_FILE}.bak"
-GRADLE_FILE_BACKUP_PATH="${GRADLE_FILE_PATH}.bak"
+GRADLE_FILE_BACKUP_PATH="${PRODUCT_FLAVOR_GRADLE_PATH}.bak"
 BUILD_TYPES_FILE_BACKUP_PATH="${BUILD_TYPES_FILE_PATH}.bak"
 
 # Function to rollback changes
