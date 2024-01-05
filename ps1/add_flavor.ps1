@@ -151,16 +151,16 @@ function Read-User-Inputs {
     } while (-not $companyName)
 
     do {
-        $customerCode = Read-Host "Enter Company Code"
-        $customerCode = $customerCode.Trim()
+        $companyCode = Read-Host "Enter Company Code"
+        $companyCode = $companyCode.Trim()
 
-        if (-not $customerCode -match "^[0-9]+$") {
+        if (-not $companyCode -match "^[0-9]+$") {
             Write-Host "Error: Company Code must be a numeric value."
             continue
         }
 
-        if ($dartContent -match "customerCode: $customerCode") {
-            Write-Host "Code '$customerCode' already exists for flavor '$flavorName'. Choose an action:"
+        if ($dartContent -match "companyCode: $companyCode") {
+            Write-Host "Code '$companyCode' already exists for flavor '$flavorName'. Choose an action:"
             Write-Host "1. Enter a New Code"
             Write-Host "2. Exit Script"
             Write-Host "3. Show Match"
@@ -173,7 +173,7 @@ function Read-User-Inputs {
                 }
                 "3" {
                     Write-Host "Matching enum details:"
-                    $dartContent | Select-String -Pattern "EnvironmentType.*customerCode: $customerCode" -Context 0,1
+                    $dartContent | Select-String -Pattern "EnvironmentType.*companyCode: $companyCode" -Context 0,1
                     continue
                 }
                 default { Write-Host "Invalid option. Please select a valid action." }
@@ -218,13 +218,13 @@ function Read-User-Inputs {
     Write-Host "Flavor Name: $flavorName"
     Write-Host "App Name: $appName"
     Write-Host "Company Name: $companyName"
-    Write-Host "Company Code: $customerCode"
+    Write-Host "Company Code: $companyCode"
     Write-Host "URL: $urlName"
 }
 
 function Add-Env-Type-In-Dart {
     # Check if all required arguments are provided
-    if (-not $flavorName -or -not $urlName -or -not $customerCode -or -not $companyName) {
+    if (-not $flavorName -or -not $urlName -or -not $companyCode -or -not $companyName) {
         Write-Host "ERROR: Missing arguments. All arguments must be provided."
         return 1
     }
@@ -233,7 +233,7 @@ function Add-Env-Type-In-Dart {
     $newEnumValue = @"
 $flavorName(
     urlName: '$urlName',
-    customerCode: $customerCode,
+    companyCode: $companyCode,
     companyName: '$companyName',
     appName: '$appName'
 ),

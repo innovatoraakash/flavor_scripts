@@ -7,17 +7,17 @@ DART_FILE_PATH="./lib/config/flavor/flavor_config_data.dart"
 INPUT_CODE="enum EnvironmentType {
   sample(
     urlName: 'https://apple.mydynamicerp.com',
-    customerCode: 121212,
+    companyCode: 121212,
     companyName: 'aaaa',
-    appNAme:'sample'
+    appName:'sample'
   );
   final String urlName;
-  final int customerCode;
+  final int companyCode;
   final String companyName;
   final String appName;
   const EnvironmentType({
     required this.urlName,
-    required this.customerCode,
+    required this.companyCode,
     required this.companyName,
      required this.appName,
 

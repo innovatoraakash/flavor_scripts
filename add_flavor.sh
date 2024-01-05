@@ -210,24 +210,24 @@ fi
 
         # Prompt for company code input
     while true; do
-        read -p "Enter Company Code: " customerCode
-        customerCode=$(trim "$customerCode")  # Trims whitespace from input
+        read -p "Enter Company Code: " companyCode
+        companyCode=$(trim "$companyCode")  # Trims whitespace from input
 
-        if ! [[ "$customerCode" =~ ^[0-9]+$ ]]; then
+        if ! [[ "$companyCode" =~ ^[0-9]+$ ]]; then
             echo "Error: Company Code must be a numeric value."
             continue
         fi
 
         # Check if the code exists in the Dart file
-        if grep -q "customerCode: $customerCode" "$DART_FILE_PATH"; then
-            echo "Code '$customerCode' already exists for flavor '$flavorName'. Choose an action:"
+        if grep -q "companyCode: $companyCode" "$DART_FILE_PATH"; then
+            echo "Code '$companyCode' already exists for flavor '$flavorName'. Choose an action:"
             select opt in "Enter a New Code" "Exit Script" "Show Match"; do
                 case $opt in
                     "Enter a New Code") break ;;  # Ask for a new code
                     "Exit Script") echo "Operation aborted by user."; exit ;;  # Exit script
                     "Show Match")
                         echo "Matching enum details:"
-                        awk -v code="$customerCode" -v RS= -v FS="\n" '/EnvironmentType/ && /customerCode: '"$customerCode"'/ {print $0}' "$DART_FILE_PATH"
+                        awk -v code="$companyCode" -v RS= -v FS="\n" '/EnvironmentType/ && /companyCode: '"$companyCode"'/ {print $0}' "$DART_FILE_PATH"
                         continue 2  # Continue at the beginning of the outer loop
                         ;;
                     *) echo "Invalid option. Please select a valid action." ;;
@@ -286,7 +286,7 @@ fi
 
 add_env_type_in_dart() {
     # Check if all required arguments are provided
-    if [ -z "$flavorName" ] || [ -z "$urlName" ] || [ -z "$customerCode" ] || [ -z "$companyName" ]; then
+    if [ -z "$flavorName" ] || [ -z "$urlName" ] || [ -z "$companyCode" ] || [ -z "$companyName" ]; then
         echo "ERROR: Missing arguments. All arguments must be provided."
         return 1
     fi
@@ -294,7 +294,7 @@ add_env_type_in_dart() {
     # Define the new enum value
     newEnumValue="$flavorName(
         urlName: '$urlName',
-        customerCode: $customerCode,
+        companyCode: $companyCode,
         companyName: '$companyName',
         appName: '$appName'
     ),"
