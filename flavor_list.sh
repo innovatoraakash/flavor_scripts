@@ -21,7 +21,7 @@ fi
 flavorList=()
 
 while IFS= read -r line; do
-    value=$(echo "$line" | sed 's/\b\(final\|const\|static\|import\|print\|log\|sample\)\b//g')
+    value=$(echo "$line" | sed 's/\b\(final\|const\|static\|EnvironmentData\|import\|print\|log\|sample\)\b//g')
     if [[ -z "$value" ]]; then
         continue  # Skip if the value is empty after removal
     fi

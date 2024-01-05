@@ -13,6 +13,8 @@ if "%1"=="list" (
     set "SCRIPT_NAME=add_flavor.sh"
 ) else if "%1"=="publish" (
     set "SCRIPT_NAME=publish.sh"
+) else if "%1"=="build" (
+    set "SCRIPT_NAME=build.sh"
 ) else if "%1"=="--help" (
     @REM echo Usage: script_name [list|setup|--help]
     echo.
@@ -20,6 +22,7 @@ if "%1"=="list" (
     echo setup   - build required project structure for flavors 
     echo add   - add new flavor to current project directory
     echo publish   - publish all or selected flavors to store 
+    echo build   - build release apk for all or selected flavors 
     echo --help  - Display this help message
     exit /b
 ) else (
