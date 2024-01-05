@@ -13,7 +13,7 @@ android {
         sample {
             dimension 'version'
             applicationIdSuffix '.apple'
-            resValue 'string', 'app_name', 'aaa'
+            resValue 'string', 'application_name', 'aaa'
             buildConfigField 'String', 'APP_BASE_URL', 'https://apple.mydynamicerp.com'
         }
     }

@@ -365,7 +365,7 @@ add_flavor_detail_in_gradle() {
         $flavorName {
             dimension \"version\"
             applicationIdSuffix \".$flavorName\"
-            resValue \"string\", \"app_name\", \"$appName\"
+            resValue \"string\", \"application_name\", \"$appName\"
             buildConfigField \"String\", \"APP_BASE_URL\", \"$urlName\"
         }
     "
