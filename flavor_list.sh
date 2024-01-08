@@ -6,7 +6,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# dart_file="./lib/config/flavor/flavor_config_data.dart"
+# dart_file="./lib/config/flavor/flavor_config.dart"
 dart_file=$(find . -name "flavor_config.dart")
 # Check if the file was found
 if [ -z "$dart_file" ]; then

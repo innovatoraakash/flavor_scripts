@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GRADLE_FILE_PATH="./android/app/build.gradle"
+PRODUCT_FLAVOR_GRADLE_PATH="./android/app/build.gradle"
 BACKUP_FILE_PATH="./android/app/build.gradle.bak"
 CONTENT_TO_ADD=$(cat <<EOL
     apply from:'../config/build_types.gradle'
@@ -10,8 +10,8 @@ EOL
 )
 
 # Check if the file exists
-if [ ! -f "$GRADLE_FILE_PATH" ]; then
-    echo "Error: Gradle file not found at $GRADLE_FILE_PATH"
+if [ ! -f "$PRODUCT_FLAVOR_GRADLE_PATH" ]; then
+    echo "Error: Gradle file not found at $PRODUCT_FLAVOR_GRADLE_PATH"
     exit 1
 fi
 
@@ -22,9 +22,9 @@ if [ -f "$BACKUP_FILE_PATH" ]; then
 fi
 
 # Make a new backup of the original file
-cp "$GRADLE_FILE_PATH" "$BACKUP_FILE_PATH"
+cp "$PRODUCT_FLAVOR_GRADLE_PATH" "$BACKUP_FILE_PATH"
 
 # Use awk to insert the content after 'android {' and before 'namespace'
-awk -v content="$CONTENT_TO_ADD" '/android {/ {print; print content; next} 1' "$GRADLE_FILE_PATH" > "$GRADLE_FILE_PATH.tmp" && mv "$GRADLE_FILE_PATH.tmp" "$GRADLE_FILE_PATH"
+awk -v content="$CONTENT_TO_ADD" '/android {/ {print; print content; next} 1' "$PRODUCT_FLAVOR_GRADLE_PATH" > "$PRODUCT_FLAVOR_GRADLE_PATH.tmp" && mv "$PRODUCT_FLAVOR_GRADLE_PATH.tmp" "$PRODUCT_FLAVOR_GRADLE_PATH"
 
 echo "Content added successfully. New backup created at $BACKUP_FILE_PATH."

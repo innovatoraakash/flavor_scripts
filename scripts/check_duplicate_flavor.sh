@@ -1,5 +1,5 @@
 #!/bin/bash
-#lib\config\flavor\flavor_config_data.dart
+#lib\config\flavor\flavor_config.dart
 dart_file=$(find . -name "flavor_config.dart")
 
 
@@ -9,23 +9,23 @@ if [ ! -f "$dart_file" ]; then
   exit 1
 fi
 
-# Extract customerCode values and check for duplicates
-checkDuplicateCustomerCodes() {
-  customer_codes=()
+# Extract Company Code values and check for duplicates
+checkDuplicateCompanyCodes() {
+  company_codes=()
 
   while IFS= read -r line; do
-    if [[ "$line" =~ customerCode:\ ([0-9]+), ]]; then
-      customer_code="${BASH_REMATCH[1]}"
-      if [[ " ${customer_codes[@]} " =~ " $customer_code " ]]; then
-        echo "Duplicate customer code found: $customer_code"
+    if [[ "$line" =~ companyCode:\ ([0-9]+), ]]; then
+      company_code="${BASH_REMATCH[1]}"
+      if [[ " ${company_codes[@]} " =~ " $company_code " ]]; then
+        echo "Duplicate companyCoder code found: $company_code"
         exit 1  # Exit with an error code
       fi
-      customer_codes+=("$customer_code")
+      company_codes+=("$company_code")
     fi
   done < "$dart_file"
 
-#  echo "No duplicate customer codes found."
+#  echo "No duplicate Company codes found."
 }
 
 # Main script
-checkDuplicateCustomerCodes
+checkDuplicateCompanyCodes
