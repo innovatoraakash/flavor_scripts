@@ -1,5 +1,10 @@
 #!/bin/bash
 export LC_ALL=C.UTF-8
+# Define ANSI color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
 # Define paths
 PRODUCT_FLAVOR_GRADLE_PATH="./android/config/product_flavors.gradle"
@@ -10,6 +15,17 @@ if [ -z "$FLAVOR_CONFIG_FILE" ]; then
     # File not found
     echo -e "${RED}flavor_config.dart not found.\nPlease rename your file containing EnvironmentType to flavor_config.dart, or run flavor setup.${NC}"
 fi
+
+
+# Path to your pubspec.yaml
+PUBSPEC="./pubspec.yaml"
+
+# Extract the name value
+projectName=$(grep '^name:' "$PUBSPEC" | cut -d':' -f2 | xargs)
+
+echo "The name is: $projectName"
+
+# # Define backup paths
 DART_FILE_BACKUP_PATH="${FLAVOR_CONFIG_FILE}.bak"
 GRADLE_FILE_BACKUP_PATH="${PRODUCT_FLAVOR_GRADLE_PATH}.bak"
 BUILD_TYPES_FILE_BACKUP_PATH="${BUILD_TYPES_FILE_PATH}.bak"
@@ -17,11 +33,11 @@ SignInConfig_file_BACKUP_Path="${SignInConfig_file_Path}.bak"
 ANDROID_ICON_PATH="./android/app/src/$flavorName"
 IOS_ICON_PATH="./ios/Runner/Assets.xcassets/AppIcon-$flavorName.appiconset"
 
-# Define backup paths
-DART_FILE_BACKUP_PATH="${FLAVOR_CONFIG_FILE}.bak"
-GRADLE_FILE_BACKUP_PATH="${GRADLE_FILE_PPES_FILE_PATH}.bak"
+
 
 assetPath="./flavor_icon/"
+
+
 
 Android_Icon_Path="./android/app/src/$flavorName"
 Ios_Icon_Path="./ios/Runner/Assets.xcassets/AppIcon-$flavorName.appiconset"
@@ -67,7 +83,7 @@ terminate_script_and_rollback() {
     if [[ "$choice" == "y" ]]; then
         rollback_changes
     fi
-    echo "Terminating the script."
+    echo "Terminating the script. Backup files created at for ${YELLOW}build_types.gradle${NC} and ${YELLOW}product_flavor.gradle${NC} inside ${YELLOW}android/config${NC} "
     exit
 }
 
@@ -290,8 +306,9 @@ add_env_type_in_dart() {
         echo "ERROR: Missing arguments. All arguments must be provided."
         return 1
     fi
-
+    
     # Define the new enum value
+
     newEnumValue="$flavorName(
         urlName: '$urlName',
         companyCode: $companyCode,
@@ -366,7 +383,6 @@ add_flavor_detail_in_gradle() {
             dimension \"version\"
             applicationIdSuffix \".$flavorName\"
             resValue \"string\", \"application_name\", \"$appName\"
-            buildConfigField \"String\", \"APP_BASE_URL\", \"$urlName\"
         }
     "
 
@@ -408,7 +424,7 @@ add_flavor_detail_in_gradle() {
             # Handle failure to add the new flavor
             echo "Failed to add new flavor '$flavorName'. Restoring original Gradle file."
            # mv "${PRODUCT_FLAVOR_GRADLE_PATH}.bak" "$PRODUCT_FLAVOR_GRADLE_PATH"
-            terminate_script_and_rollback
+            rollback_changes
         fi
     fi
 }
@@ -472,11 +488,16 @@ add_build_type_configuration() {
 
 # Function to generate Flutter Launcher Icons
 generate_flutter_launcher_icons() {
+       # Check if the project name matches "dynamic_erp"
+    if [ "$projectName" == "dynamic_erp" ]; then
+        generate_flutter_launcher_icons_erp_mode
+        return 0 # Terminate the current function
+    fi
     iconFileNamePNG="${flavorName}.png"
     iconFileNameJPG="${flavorName}.jpg"
     iconFileNameJPEG="${flavorName}.jpeg"
     YAML_FILE_NAME="flutter_launcher_icons-${flavorName}.yaml"
-    
+
     # Check if the expected image in any supported format exists in the specified path
     if [ ! -f "$assetPath$iconFileNamePNG" ] && [ ! -f "$assetPath$iconFileNameJPG" ] && [ ! -f "$assetPath$iconFileNameJPEG" ]; then
         echo "No image file found for '$flavorName' with supported formats (.png, .jpg, .jpeg)."
@@ -489,11 +510,11 @@ generate_flutter_launcher_icons() {
                 echo "Image uploaded successfully."
             else
                 echo "Image upload confirmation failed. Aborting."
-                terminate_script_and_rollback
+                rollback_changes
                 return 1
             fi
         else
-        terminate_script_and_rollback
+        rollback_changes
             echo "Aborting the image generation process."
             return 1
         fi
@@ -524,6 +545,68 @@ EOL
     else
        flutter pub add flutter_launcher_icons
 
+         rm "$YAML_FILE_NAME"
+         flutter pub get
+       flutter pub run flutter_launcher_icons:main -f "$YAML_FILE_NAME"
+        log_message "ERROR: Failed to run flutter_launcher_icons for $YAML_FILE_NAME."
+          terminate_script_and_rollback
+        return 1
+    fi
+}
+
+# Function to generate Flutter Launcher Icons for dynamicerp model
+generate_flutter_launcher_icons_erp_mode() {
+    assetPath="./assets/launcher_icons"
+    iconFileNamePNG="${flavorName}.png"
+    iconFileNameJPG="${flavorName}.jpg"
+    iconFileNameJPEG="${flavorName}.jpeg"
+    YAML_FILE_NAME="flutter_launcher_icons-${flavorName}.yaml"
+
+    # Check if the expected image in any supported format exists in the specified path
+    if [ ! -f "$assetPath$iconFileNamePNG" ] && [ ! -f "$assetPath$iconFileNameJPG" ] && [ ! -f "$assetPath$iconFileNameJPEG" ]; then
+        echo "No image file found for '$flavorName' with supported formats (.png, .jpg, .jpeg)."
+        read -p "Do you want to upload an image now? (y/n): " uploadChoice
+        if [ "$uploadChoice" == "y" ]; then
+            # Add logic here to handle image upload
+            echo "Please upload an image in one of the supported formats (.png, .jpg, .jpeg) to '$assetPath' and press Enter when done."
+            read -p "Press Enter after uploading the image."
+            if [ -f "$assetPath$iconFileNamePNG" ] || [ -f "$assetPath$iconFileNameJPG" ] || [ -f "$assetPath$iconFileNameJPEG" ]; then
+                echo "Image uploaded successfully."
+            else
+                echo "Image upload confirmation failed. Aborting."
+                generate_flutter_launcher_icons
+                return 0
+            fi
+        else
+            echo "continuing with default logo"
+            return 0
+        fi
+    fi
+
+    # Determine the actual image file name to be used
+    if [ -f "$assetPath$iconFileNamePNG" ]; then
+        actualIconFileName="$iconFileNamePNG"
+    elif [ -f "$assetPath$iconFileNameJPG" ]; then
+        actualIconFileName="$iconFileNameJPG"
+    elif [ -f "$assetPath/$iconFileNameJPEG" ]; then
+        actualIconFileName="$iconFileNameJPEG"
+    fi
+    
+    cat > "$YAML_FILE_NAME" <<EOL
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "$assetPath$actualIconFileName"
+EOL
+     
+    flutter pub run flutter_launcher_icons:main -f "$YAML_FILE_NAME"
+
+    if [ $? -eq 0 ]; then
+        log_message "flutter_launcher_icons run successfully for $YAML_FILE_NAME"
+         rm "$YAML_FILE_NAME"
+    else
+       flutter pub add flutter_launcher_icons
          rm "$YAML_FILE_NAME"
          flutter pub get
        flutter pub run flutter_launcher_icons:main -f "$YAML_FILE_NAME"

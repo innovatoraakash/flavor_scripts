@@ -239,5 +239,33 @@ do
 # Build the Android App Bundle for the flavor
  flutter build appbundle --flavor $flavor --release
 
+
+  Publish the APK to the Play Store using the key credentials JSON
+  AAB_PATH="./build/app/outputs/bundle/${flavor}Release/app-$flavor-release.aab"
+
+  #fastlane uses ruby
+  #install ruby for windows 
+  #gem install fastlane
+  while true; do
+  #checks for the infodynamic1 account and no republish case 
+  #
+    if fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json" --package_name "dynamic.school.$flavor"; then
+        echo "success"
+        break
+    #checks for the infodynamic1 account and republish case 
+    elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json" --package_name "dynamic.school.re.$flavor"; then
+        echo "success after package name change"
+        break
+
+    #checks for infodynamic
+    elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json1" --package_name "dynamic.school.$flavor"; then
+        echo "success after json file change"
+        break
+    elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json1" --package_name "dynamic.school.re.$flavor"; then
+        echo "success after pkg and json change"
+        break
+    else
+        break
+    fi
   done
 # done
