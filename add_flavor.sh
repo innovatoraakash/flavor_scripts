@@ -224,7 +224,7 @@ fi
         break  # Valid company name entered
     done
 
-        # Prompt for company code input
+    # Prompt for company code input
     while true; do
         read -p "Enter Company Code: " companyCode
         companyCode=$(trim "$companyCode")  # Trims whitespace from input
@@ -253,6 +253,19 @@ fi
             break  # Valid company code entered
         fi
     done
+
+    # Prompt for bundle identifier
+   
+        read -p "Enter Bundle Identifier Id (leave blank for default): " bundleId
+        bundleId=$(trim "$bundleId")  # Trims whitespace from input
+
+        # if ! [[ "$bundleId" =~ ^[0-9]+$ ]]; then
+        #     echo "Error: Company Code must be a numeric value."
+        #     continue
+        # fi
+        
+     
+    
 
     # Choose URL Extension Type
     echo "Select URL Extension Type:"
@@ -309,12 +322,22 @@ add_env_type_in_dart() {
     
     # Define the new enum value
 
-    newEnumValue="$flavorName(
-        urlName: '$urlName',
-        companyCode: $companyCode,
-        companyName: '$companyName',
-        appName: '$appName'
-    ),"
+    if [ -n "$bundleId" ]; then
+        newEnumValue="$flavorName(
+            urlName: '$urlName',
+            companyCode: $companyCode,
+            companyName: '$companyName',
+            appName: '$appName',
+            bundleId: '$bundleId'
+        ),"
+    else
+        newEnumValue="$flavorName(
+            urlName: '$urlName',
+            companyCode: $companyCode,
+            companyName: '$companyName',
+            appName: '$appName'
+        ),"
+    fi
 
     # Backup the original Dart file
     cp "$FLAVOR_CONFIG_FILE" "${FLAVOR_CONFIG_FILE}.bak"
