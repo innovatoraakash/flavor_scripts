@@ -23,7 +23,7 @@ PUBSPEC="./pubspec.yaml"
 # Extract the name value
 projectName=$(grep '^name:' "$PUBSPEC" | cut -d':' -f2 | xargs)
 
-echo "The name is: $projectName"
+echo "Project name : $projectName"
 
 # # Define backup paths
 DART_FILE_BACKUP_PATH="${FLAVOR_CONFIG_FILE}.bak"
@@ -328,14 +328,14 @@ add_env_type_in_dart() {
             companyCode: $companyCode,
             companyName: '$companyName',
             appName: '$appName',
-            bundleId: '$bundleId'
+            bundleId: '$bundleId',
         ),"
     else
         newEnumValue="$flavorName(
             urlName: '$urlName',
             companyCode: $companyCode,
             companyName: '$companyName',
-            appName: '$appName'
+            appName: '$appName',
         ),"
     fi
 
@@ -392,6 +392,7 @@ add_env_type_in_dart() {
             return 1
         fi
     fi
+    dart format $FLAVOR_CONFIG_FILE
 }
 
 
