@@ -2,8 +2,7 @@
 setlocal
 
 set "BASH_PATH=C:\Program Files\Git\bin\bash.exe"
-set "SCRIPT_PATH=E:\flavor_scripts"
-
+set "SCRIPT_PATH=%~dp0"
 
 if "%1"=="list" (
     set "SCRIPT_NAME=flavor_list.sh"
