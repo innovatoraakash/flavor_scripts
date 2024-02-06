@@ -257,7 +257,7 @@ fi
 for flavor in "${flavors[@]}"
 do  
 # Build the Android App Bundle for the flavor
-#  flutter build appbundle --flavor $flavor --release
+ flutter build appbundle --flavor $flavor --release
 
 
  # Publish the APK to the Play Store using the key credentials JSON
