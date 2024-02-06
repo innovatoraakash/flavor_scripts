@@ -1,10 +1,11 @@
 #!/bin/bash
 # Get the full path of the current script
 SCRIPT_PATH=$(realpath "$0")
-
 # Extract the directory from the full path
 BASE_DIR=$(dirname "$SCRIPT_PATH")
 # Define file paths
+
+
 
 dart_file=$(find . -name "flavor_config.dart")
 key_credentials_json="android/config/automate/pc-api-4985841030109568680-940-fb3d7f4ebd8d.json"
@@ -39,6 +40,8 @@ YELLOW='\033[1;33m' # Yellow color
 RED='\033[0;31m'    # Red color
 GREEN='\033[0;32m'  # Green color
 NC='\033[0m'        # No color
+
+"$BASE_DIR/update_build_number.sh"
 
 checkFlavorListEmpty() {
     source "${BASE_DIR}/flavor_list.sh"
@@ -257,7 +260,7 @@ fi
 for flavor in "${flavors[@]}"
 do  
 # Build the Android App Bundle for the flavor
- flutter build appbundle --flavor $flavor --release
+#  flutter build appbundle --flavor $flavor --release
 
 
  # Publish the APK to the Play Store using the key credentials JSON
@@ -273,20 +276,19 @@ do
     if fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json" --package_name "$applicationId.$flavor"; then
         echo "success"
         break
-    #checks for the infodynamic1 account and republish case 
-    elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json" --package_name "$applicationId.re.$flavor"; then
-        echo "success after package name change"
-        break
-
     #checks for infodynamic
     elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json1" --package_name "$applicationId.$flavor"; then
         echo "success after json file change"
+        break
+    #checks for the infodynamic1 account and republish case 
+    elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json" --package_name "$applicationId.re.$flavor"; then
+        echo "success after package name change"
         break
     elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json1" --package_name "$applicationId.re.$flavor"; then
         echo "success after pkg and json change"
         break
     else
-        echo "no appid match at playstore"
+        echo -e "${RED}no appid match at playstore"
 
         break
     fi
