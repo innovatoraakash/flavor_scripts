@@ -4,7 +4,7 @@
 # bingo!!!
 
 ## run 
-'''
+```
 flavors --help
-''' 
+````
 ## and you will get all available commands
