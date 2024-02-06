@@ -9,11 +9,31 @@ BASE_DIR=$(dirname "$SCRIPT_PATH")
 dart_file=$(find . -name "flavor_config.dart")
 key_credentials_json="android/config/automate/pc-api-4985841030109568680-940-fb3d7f4ebd8d.json"
 key_credentials_json1="android/config/automate/api-6145234015965894785-501180-b8d9d6d4d6b0.json"
+build_gradle_path="android/app/build.gradle"
 if [ -z "$dart_file" ]; then
     # File not found
     echo -e "${RED}flavor_config.dart not found.\nPlease rename your file containing EnvironmentType to flavor_config.dart, or run flavor setup.${NC}"
     exit
 fi
+
+
+# Define the content of the Gemfile
+gemfile_content='source "https://rubygems.org"\n\ngem "fastlane"'
+
+# Specify the path to the Gemfile
+gemfile_path="./android/Gemfile"
+
+# Create the Gemfile with the specified content
+echo -e "$gemfile_content" > "$gemfile_path"
+
+# Output success message
+echo "Gemfile created successfully at $gemfile_path"
+
+# Use grep to find the line containing 'applicationId' and awk to extract the suffix
+applicationId=$(grep "applicationId" "$build_gradle_path" | awk -F '"' '{print $2}')
+
+# Print the extracted suffix
+echo "app id: $applicationId"
 # Define color codes
 YELLOW='\033[1;33m' # Yellow color
 RED='\033[0;31m'    # Red color
@@ -232,40 +252,43 @@ fi
 
 
 # Define the path to the key credentials JSON file
-
+# cd android
 # Loop through each flavor and build the aab and publish the file
 for flavor in "${flavors[@]}"
 do  
 # Build the Android App Bundle for the flavor
- flutter build appbundle --flavor $flavor --release
+#  flutter build appbundle --flavor $flavor --release
 
 
-  Publish the APK to the Play Store using the key credentials JSON
+ # Publish the APK to the Play Store using the key credentials JSON
   AAB_PATH="./build/app/outputs/bundle/${flavor}Release/app-$flavor-release.aab"
 
   #fastlane uses ruby
   #install ruby for windows 
   #gem install fastlane
+  #fastlane init
   while true; do
   #checks for the infodynamic1 account and no republish case 
   #
-    if fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json" --package_name "dynamic.school.$flavor"; then
+    if fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json" --package_name "$applicationId.$flavor"; then
         echo "success"
         break
     #checks for the infodynamic1 account and republish case 
-    elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json" --package_name "dynamic.school.re.$flavor"; then
+    elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json" --package_name "$applicationId.re.$flavor"; then
         echo "success after package name change"
         break
 
     #checks for infodynamic
-    elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json1" --package_name "dynamic.school.$flavor"; then
+    elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json1" --package_name "$applicationId.$flavor"; then
         echo "success after json file change"
         break
-    elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json1" --package_name "dynamic.school.re.$flavor"; then
+    elif fastlane supply --aab "$AAB_PATH" --track "production" --json_key "$key_credentials_json1" --package_name "$applicationId.re.$flavor"; then
         echo "success after pkg and json change"
         break
     else
+        echo "no appid match at playstore"
+
         break
     fi
   done
-# done
+done
