@@ -1,10 +1,10 @@
 ## Clone this package to any local path 
-## set path_to_script/flavorscript in environment variables
+### set path_to_script/flavorscript in environment variables
 
 # bingo!!!
 
-## run 
+### run 
 ```
 flavors --help
 ````
-## and you will get all available commands
+### now you will get all available commands
